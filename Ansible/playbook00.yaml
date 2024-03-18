@@ -1,0 +1,8 @@
+- name: Instalamos webserver en ACR
+  hosts: server_azure
+  remote_user: adminUsername
+  become: true
+  
+- import_playbook: playbook01_podman_install.yaml
+
+- import_playbook: playbook02_deploy.yaml

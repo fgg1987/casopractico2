@@ -1,0 +1,39 @@
+- name: Instalamos webserver en ACR
+  hosts: server_azure
+  remote_user: adminUsername
+  become: true
+  vars_files:
+    - variables.yaml
+  tasks:
+    - name: login en ACR
+      containers.podman.podman_login:
+        username: "{{ user_acr }}"
+        password: "{{ pass_acr }}"
+        registry: "{{ server_acr }}"
+        
+    - name: Obteniendo imagen
+      containers.podman.podman_image:
+       name: docker.io/nginx
+       
+    - name: Taggeando imagen
+      containers.podman.podman_tag:
+        image: docker.io/nginx:latest
+        target_names:
+          - nginx:casopractico2
+          
+    - name: Push de imagen
+      containers.podman.podman_image:
+        name: nginx:casopractico2
+        push: true
+        username: "{{ user_acr }}"
+        password: "{{ pass_acr }}"
+        push_args:
+         dest: "{{ server_acr }}"
+         
+    - name: levantando contenedor nginx
+      containers.podman.podman_container:
+        name: contenedorcp2
+        image: "{{ server_acr }}/nginx:casopractico2"
+        state: started
+        ports: "8080:80"
+    

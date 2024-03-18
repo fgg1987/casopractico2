@@ -1,0 +1,22 @@
+- name: Instalacion de Podman
+  hosts: server_azure
+  become: true
+  tasks:
+    - name: Repositorio oficial de Podman agregado
+      ansible.builtin.apt_repository:
+        repo: 'deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_distribution_version }}/ /'
+        state: present
+        update_cache: no
+        filename: "devel:kubic:libcontainers:stable.list"
+
+    - name: Agregando Podman apt
+      ansible.builtin.apt_key:
+        url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_distribution_version }}/Release.key"
+        state: present
+
+    - name: Instalando Podman
+      ansible.builtin.apt:
+        name: 
+          - podman
+        state: present
+        update_cache: yes
